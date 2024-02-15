@@ -32,4 +32,23 @@ async function handleGetAnalytics(req,res){
     return res.status(200).json({ totalClicks: entry.visitHistory.length,
         analytics:entry.visitHistory});
 }
-module.exports={handleGenerateNewShortUrl, handleGetAnalytics};
+
+async function handleRedirect(req,res){
+    const shortId = req.params.shortId;
+    const entry = await URL.findOneAndUpdate(
+      {
+        shortId,
+      },
+      {
+        $push: {
+          visitHistory: {
+            timestamp: Date.now(),
+          },
+        },
+      },
+      {
+        new: true,
+      }
+    );
+}
+module.exports={handleGenerateNewShortUrl, handleGetAnalytics, handleRedirect};
